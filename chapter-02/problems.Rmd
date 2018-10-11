@@ -1,0 +1,59 @@
+Easy 1 2 3. Medium 1 2. Hard 1 2 3 4.
+
+# 2M1
+
+Recall the globe tossing model from the chapter. Compute and plot the grid approximate posterior distribution for each of the following sets of observations. In each case, assume a uniform prior for p. 
+
+```{r}
+
+plot_water_posterior <- function(observed_waters, tosses, points = 100) {
+  # define the grid (how many points, parameter values)
+  p <- seq(0, 1, length.out = points)
+  
+  # compute prior at each point in the grid (uniform, in this case)
+  prior <- rep.int(1/length(p), length(p))
+  
+  # compute the likelihood at each parameter value (the plausibility that the given value of p would have produced those observations)
+  likelihood <- dbinom(observed_waters, size = tosses, prob = p)
+  
+  # compute the unstandardized posterior at each parameter vaule, by multiplying the prior by the likelihood
+  unstandardized_posterior <- prior * likelihood 
+  
+  # standardize the posterior (normalize)
+  posterior <- unstandardized_posterior / sum(unstandardized_posterior)
+  
+  max_p <- p[which.max(posterior)]
+  
+  plot(p, 
+       posterior,
+       xlab = "probability of water", 
+       ylab = "posterior probability",
+       sub = paste0("(Max ", round(max_p, 3), ")")
+       )
+}
+
+```
+
+## W, W, W
+
+Should be 0 at p=0, nonzero at p=1 (still possible it's a water planet) and weighted more toward p=1 (because it's more likely that it's water-heavy than land-heavy at this point)
+
+```{r}
+plot_water_posterior(observed_waters = 3, tosses = 3)
+```
+
+## W, W, W, L
+
+Should be 0 at p=0 and p=1 (it's not a land-only or water-only planet) and peak at 3/4.
+
+```{r}
+plot_water_posterior(observed_waters = 3, tosses = 4)
+```
+
+## L, W, W, L, W, W, W
+
+Should be 0 at p=0 and p=1, and peak at around 5/7 = .714285714
+
+```{r}
+plot_water_posterior(observed_waters = 5, tosses = 7)
+```
