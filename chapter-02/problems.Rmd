@@ -6,12 +6,14 @@ Recall the globe tossing model from the chapter. Compute and plot the grid appro
 
 ```{r}
 
-plot_water_posterior <- function(observed_waters, tosses, points = 100) {
+water_posterior <- function(observed_waters, tosses, prior = NULL, points = 100) {
   # define the grid (how many points, parameter values)
   p <- seq(0, 1, length.out = points)
   
-  # compute prior at each point in the grid (uniform, in this case)
-  prior <- rep.int(1/length(p), length(p))
+  if (is.null(prior)) {
+    # compute prior at each point in the grid (uniform, in this case)
+    prior <- rep.int(1/length(p), length(p)) # We could normalize this later, actually
+  }
   
   # compute the likelihood at each parameter value (the plausibility that the given value of p would have produced those observations)
   likelihood <- dbinom(observed_waters, size = tosses, prob = p)
@@ -22,9 +24,16 @@ plot_water_posterior <- function(observed_waters, tosses, points = 100) {
   # standardize the posterior (normalize)
   posterior <- unstandardized_posterior / sum(unstandardized_posterior)
   
-  max_p <- p[which.max(posterior)]
+  plot_posterior(p, posterior)
   
-  plot(p, 
+  posterior
+}
+
+plot_posterior <- function(param_grid, posterior) {
+  
+  max_p <- param_grid[which.max(posterior)]
+  
+  plot(param_grid, 
        posterior,
        xlab = "probability of water", 
        ylab = "posterior probability",
@@ -39,7 +48,7 @@ plot_water_posterior <- function(observed_waters, tosses, points = 100) {
 Should be 0 at p=0, nonzero at p=1 (still possible it's a water planet) and weighted more toward p=1 (because it's more likely that it's water-heavy than land-heavy at this point)
 
 ```{r}
-plot_water_posterior(observed_waters = 3, tosses = 3)
+post <- water_posterior(observed_waters = 3, tosses = 3)
 ```
 
 ## W, W, W, L
@@ -47,7 +56,7 @@ plot_water_posterior(observed_waters = 3, tosses = 3)
 Should be 0 at p=0 and p=1 (it's not a land-only or water-only planet) and peak at 3/4.
 
 ```{r}
-plot_water_posterior(observed_waters = 3, tosses = 4)
+post <- water_posterior(observed_waters = 3, tosses = 4)
 ```
 
 ## L, W, W, L, W, W, W
@@ -55,5 +64,74 @@ plot_water_posterior(observed_waters = 3, tosses = 4)
 Should be 0 at p=0 and p=1, and peak at around 5/7 = .714285714
 
 ```{r}
-plot_water_posterior(observed_waters = 5, tosses = 7)
+post <- water_posterior(observed_waters = 5, tosses = 7)
+```
+
+# Hmmmmmmm
+
+If you apply this procedure iteratively with each observation, one at a time, does it give the same result? 
+
+The part I'm least sure how to reason about is how the likelihood function would change. Because getting "L W W" is 1/3 as likely than any sequence of 2W's and an L. This may wash out in the normalization step though. 
+
+# Let's try WLWWWLWLW and see if we can recreate Figure 2.5
+```{r} 
+# W with uniform prior
+post <- water_posterior(1, 1) 
+# Now pass in the posterior as the prior to the next step
+post <- water_posterior(0, 1, post) 
+post <- water_posterior(1, 1, post)
+post <- water_posterior(1, 1, post)
+post <- water_posterior(1, 1, post)
+post <- water_posterior(0, 1, post)
+post <- water_posterior(1, 1, post)
+post <- water_posterior(0, 1, post)
+post <- water_posterior(1, 1, post)
+```
+
+And compare it to doing them all at once
+```{r}
+post <- water_posterior(6, 9)
+```
+Looks identical! 
+
+Digging in a little more about why this likelihood function works in both cases: if you plug in 0 or 1 successes out of 1 trial into the binomial function, you end up with just `p` and `1-p`: so linear functions. You can think of this as a 'special case' of the binomial. Or you can think of it as: we could do this iteratively with just linear likelihoods without ever needing to bust out the binomial, but it's a handy closed form that layers the likelihoods together for us into a single line of code. 
+
+I think the likelihood function is a little tricky to reason about at first because it's _a function of the possible world we're in_. Which is rad, and also an unusual way to think. 
+
+# 2M2
+
+Now assume a piecewise prior: 0 when p < .5 and positive constant when p >= .5. Again, compute and plot the approximate posterior distributions. 
+
+So basically we only need to adjust the prior to mask out the left half of the plot. The right half should stay the same shape, but be renormalized so that the integral still adds up to 1, therefore the peaks will be higher (but still occur in the same place). 
+
+```{r}
+piecewise_water_posterior <- function(observed_waters, tosses, points = 100) {
+  p <- seq(0, 1, length.out = points)
+  
+  # compute prior at each point in the grid (uniform, in this case)
+  prior <- ifelse(p < 0.5, 0, 1)
+  
+  likelihood <- dbinom(observed_waters, size = tosses, prob = p)
+  unstandardized_posterior <- prior * likelihood 
+  posterior <- unstandardized_posterior / sum(unstandardized_posterior)
+
+  plot_posterior(p, posterior)
+  
+  posterior
+}
+```
+
+## W, W, W
+```{r}
+post <- piecewise_water_posterior(observed_waters = 3, tosses = 3)
+```
+
+## W, W, W, L
+```{r}
+post <- piecewise_water_posterior(observed_waters = 3, tosses = 4)
+```
+
+## L, W, W, L, W, W, W
+```{r}
+post <- piecewise_water_posterior(observed_waters = 5, tosses = 7)
 ```
