@@ -47,8 +47,6 @@ Which values of p contain the narrowest interval equal to 66% of the posterior p
 HPDI(samples, prob = 0.66)
 ```
 
-# Medium
-
 # 3M1
 
 Suppose 8 waters in 15 tosses. Construct the posterior distribution, using grid approximation. Use a flat prior.
@@ -71,34 +69,103 @@ samples <- sample(p_grid, prob = posterior, size = 10000, replace = TRUE)
 HPDI(samples, prob = 0.90)
 ```
 
+# Setup for Hard section
 
-# 3H1
-
-male = 1, female = 0. Vector for 100 families
-
-Using grid apprximaiton, compute the posterior distribution for the probability of a birth being a boy. Assum a uniform prior probability. which parameter value maximizes the postior probability?
+These are vectors of birth records for 100 families. male = 1, female = 0. 
 
 ```{r}
 # Load birth1 and birth2 into memory
 data(homeworkch3)
 ```
 
+# 3H1
+
+Using grid appoximation, compute the posterior distribution for the probability of a birth being a boy. Assume a uniform prior probability. Which parameter value maximizes the posterior probability?
+
+```{r}
+actual_boys <- sum(birth1, birth2)
+actual_total_births <- length(birth1) + length(birth2)
+
+p_grid <- seq(from = 0, to = 1, length.out = 1000)
+prior <- rep(1, 1000)
+likelihood <- dbinom(actual_boys, actual_total_births, prob = p_grid)
+posterior <- normalize(prior * likelihood)
+plot(p_grid, posterior)
+```
+
 # 3H2
 
-using `sample` draw 10,000 random parameter values from the posterior distribution you calculated above. use these samples to estimate the 50, 89, and 97 % highest posterior densidty intervalse
+Using `sample` function draw 10,000 random parameter values from the posterior distribution you calculated above. Use these samples to estimate the 50, 89, and 97% highest posterior density intervals.
+
+```{r}
+samples <- sample(p_grid, prob = posterior, size = 10000, replace = TRUE)
+HPDI(samples, prob = .50)
+HPDI(samples, prob = .89)
+HPDI(samples, prob = .97)
+```
+
 
 # 3H3
 
-Use `rbinom` to simulate 10,000 replicates of 200 births. you should end up with 10000 numbers, each one a count of boys out of 200 births. compare the distirubiot nof predicted numbers of boys to the actual count in the date (111 boys out of 200 births). there are many good ways to visualize the simulations, but the `dens` command is probabliy the easiest way in this case. does it look like the model fits the data well? that is, does the distribution of predictions include the actual observation as a central, likely outcome?
+Use `rbinom` to simulate 10,000 replicates of 200 births. You should end up with 10000 numbers, each one a count of boys out of 200 births. Compare the distribution of predicted numbers of boys to the actual count in the data (111 boys out of 200 births). There are many good ways to visualize the simulations, but the `dens` command is probably the easiest way in this case.
+
+```{r}
+births <- 200
+simulations <- 10000
+prob_boys <- samples  # Is this right?
+boys <- rbinom(simulations, births, prob_boys)
+dens(boys, norm.comp = TRUE)
+```
+
+_Does it look like the model fits the data well? That is, does the distribution of predictions include the actual observation as a central, likely outcome?_
+
+Yes, it looks like the distribution peaks at 111 boys, so this model is looking pretty good. But I'm pretty sure it should be closer to 0.5 because that's the value in the "big world."
 
 # 3H4
 
-Now compare 10,000 counts of boys from 100 simulatied first borns only to the number of boys in the first births, `birth1`. How does the model look in htis light?
+_Now compare 10,000 counts of boys from 100 simulated first borns only to the number of boys in the first births, `birth1`. How does the model look in this light?_
+
+We would get this many:
+
+```{r}
+# Boys in birth1
+mean(birth1) 
+
+# That corresponds to this many boys out of 200 births
+mean(birth1) * 200
+```
+
+Now the model isn't looking as good. If we look at x=102 on the previous plot, the probability density is only about 0.6 of the peak's probability density. Looks like we had a ton of boys in birth2, but about half in birth1. 
 
 # 3H5
 
-The model assumes that sexs of first and second births are independent. to check this assumption, focus now on second birhs that followed female first borns. compare 10,000 simulated counts of boys to only those second births that followed girls. to do this correctly, you need to count the number of first borns who were girls and simulate that many births, 10,000 times. compare the counts of boys in your simulations to the actual obvserved count of boys following girls. how does the model look in this light? any guesses what is going on in these data?
+_The model assumes that sexes of first and second births are independent. To check this assumption, focus now on second births that followed female first borns. Compare 10,000 simulated counts of boys to only those second births that followed girls. To do this correctly, you need to count the number of first borns who were girls and simulate that many births, 10,000 times. compare the counts of boys in your simulations to the actual observed count of boys following girls. How does the model look in this light? Any guesses what is going on in these data?_
+
+```{r}
+girl_first_births <- sum(birth1 == 0)
+
+simulations <- 10000
+simulated_boys <- rbinom(simulations, girl_first_births, prob = samples)
+
+# Simulated number of boys following girls: 
+dens(simulated_boys, adj = 1, norm.comp = TRUE)
+
+# Actual number of boys following girls:
+sum(birth2[birth1 == 0])
+```
+
+Looks like boys are much more likely than we'd expect to follow girls, but why? 
+
+```{r}
+# Percent boys born after a boy
+mean(birth2[birth1 == 1])
+# Percent boys born after a girl
+mean(birth2[birth1 == 0])
+```
+
+I wonder if this is data from a country that prizes boys, so that couples that have a girl first are more likely to have another child in hopes that it is a boy. To test this, we could find a data source from the same time and location of single-baby families, to see if boys are overrepresented (as those families would stop as soon as they have a single boy).
 
 # Lingering questions
 
 - Why doesn't the documentation for `dbinom` match the usage in the book?
+- When is sampling from the posterior distribution randomly the same thing as sampling from the p-grid with probabilities according to the posterior?
