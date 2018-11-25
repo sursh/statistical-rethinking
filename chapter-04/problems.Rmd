@@ -10,7 +10,7 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 ```
 
-# Assignment
+# First Assignment
 
 Easy 1 2 3 (on paper) and Medium 1 2
 
@@ -36,10 +36,64 @@ dens(samples, norm.comp = TRUE)
 Translate the model from 4M1 into a `map` formula:
 
 ```{r}
-flist <- alist(
+formulas <- alist(
   y ~ dnorm(mu, sigma), 
   mu ~ dnorm(0, 10),
   sigma ~ Uniform(0, 10)
 )
+
+# If we had data, we'd then do: 
+# model <- rethinking::map(formulas, data)
+# precis(model)
 ```
 
+# Second Assignment
+
+M 3 4 (on paper) and H 1 2 3
+
+# 4H1
+
+Provide predicted heights and 89% intervals (either HPDI or PI) for each of these individuals using model-based predictions. 
+
+weights = 46.95, 43.72, 64.78, 32.59, 54.63
+
+```{r 4h1}
+
+```
+
+# 4H2
+
+Select all the ros of Howell1 with ages below 18 (should have 192 rows). 
+
+## Part a
+
+fit a linear regression using `map`. Present and interpret the estimates. For every 10 units of increase in eight, how much taller does the model predict a child gets?
+
+## Part b
+
+Plot the raw data, with height on the vertical axis and weight on the horizontal oaxis. Suprimpose he MAP regression line and 89% HPDI for the mean. Also superimpose the 89% HPDI for predicted heights.
+
+## Part C
+
+What aspects of the model fit concern you? Describe the kinds of assumptions you would change, if any, to improve the model. You don't have to write any new code. Just explain what the model appears to be doing a bad job of, and what you hypothesize would be a better model.
+
+# 4H3
+
+"logarithm of body weigth that scales with height"
+
+## Part A
+
+Model the relationshp bitween heigh )cm) and the natural log of weight (log_kg). Use the entirel Howell1 dataframe. Fit this model using the quadratic approximation [see book]. Interpret the resulting estimates
+
+## Part B
+
+Begin with this plot: 
+
+```{r}
+
+plot(height ~ weight, data=Howell1, 
+col = col.alpha(rangi2, 0.4))
+```
+```
+
+THen use samples from the quadratic approximate posterier of the model in (a) to superimpose on the plot: (1) the preidcted mean height as a function of weight (2) the 97% HPDI for the maen, and the (3) the 97% HPDI for predicted heights. 
