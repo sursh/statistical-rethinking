@@ -4,10 +4,13 @@ output: html_document
 ---
 
 ```{r setup, include = FALSE}
-# library(dplyr)
+library(tidyverse)
 library(rethinking)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
+
+data(Howell1)
+df <- Howell1
 ```
 
 # First Assignment
@@ -22,7 +25,7 @@ y_i ~ Normal(mu, sigma)
 mu ~ Normal(0, 10)
 sigma ~ Uniform(0, 10)
 
-```{r}
+```{r 4m1}
 n_samples = 1000
 samples <- rnorm(n_samples,
                  mean = rnorm(n_samples, mean = 0, sd = 10),
@@ -35,7 +38,7 @@ dens(samples, norm.comp = TRUE)
 
 Translate the model from 4M1 into a `map` formula:
 
-```{r}
+```{r 4m2}
 formulas <- alist(
   y ~ dnorm(mu, sigma), 
   mu ~ dnorm(0, 10),
@@ -55,19 +58,78 @@ M 3 4 (on paper) and H 1 2 3
 
 Provide predicted heights and 89% intervals (either HPDI or PI) for each of these individuals using model-based predictions. 
 
-weights = 46.95, 43.72, 64.78, 32.59, 54.63
 
 ```{r 4h1}
 
+formulas <- alist(
+  height ~ dnorm(mu, sigma),
+  mu <- a + b * weight,
+  a ~ dnorm(75, 20),
+  b ~ dnorm(10, 10), 
+  sigma ~ dunif(0, 20)
+)
+
+model4h1 <- rethinking::map(flist = formulas, data = df)
+
+results <- data.frame(weight = c(46.95, 43.72, 64.78, 32.59, 54.63))
+mus <- rethinking::link(model4h1, data = results)
+results$height <- apply(mus, 2, mean)
+results$HPDI_lower <- apply(mus, 2, HPDI, prob = 0.89)[1,]
+results$HPDI_upper <- apply(mus, 2, HPDI, prob = 0.89)[2,]
+results
 ```
 
 # 4H2
 
-Select all the ros of Howell1 with ages below 18 (should have 192 rows). 
+Select all the rows of Howell1 with ages below 18 (should have 192 rows). 
+
+```{r 4h2setup}
+youth <- df %>% filter(age < 18)
+lengths(youth)
+```
+
 
 ## Part a
 
-fit a linear regression using `map`. Present and interpret the estimates. For every 10 units of increase in eight, how much taller does the model predict a child gets?
+Fit a linear regression using `map`. Present and interpret the estimates. 
+
+```{r 4h2a}
+formulas <- alist(
+  height ~ dnorm(mu, sigma),
+  mu <- a + b * weight,
+  a ~ dnorm(1000, 1000),
+  b ~ dnorm(1000, 1000),
+  sigma ~ dunif(0, 1000)
+)
+
+model4h2a <- rethinking::map(flist = formulas, data = youth)
+precis(model4h2a)
+```
+
+For every 10 units of increase in weight, the model predicts that the child will get 27.2cm taller (because the coefficient of b is 2.72). 
+
+```{r 4h2a_plot}
+
+# Set up grid of weights
+weight.seq = seq(floor(min(youth$weight)), ceiling(max(youth$weight)))
+
+# Sample from the posterior and compute summary statistics
+post <- extract.samples(model4h2a)
+mu <- link(model4h2a, data = data.frame(weight = weight.seq))
+mu.mean <- apply(mu, 2, mean)
+mu.HPDI <- apply(mu, 2, rethinking::HPDI)
+
+# Issue height predictions and compute intervals
+sim.height <- sim(model4h2a, data = list(weight = weight.seq))
+height.PI <- apply(sim.height, 2, PI, prob = 0.89)
+
+# Plot model in top of data
+plot(height ~ weight, data = youth, col = col.alpha(rangi2, 0.5))
+lines(weight.seq, mu.mean)
+shade(mu.HPDI, weight.seq)
+shade(height.PI, weight.seq)
+```
+
 
 ## Part b
 
