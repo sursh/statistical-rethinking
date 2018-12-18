@@ -181,7 +181,7 @@ $(document).ready(function () {
 <ol style="list-style-type: decimal">
 <li>“Bread dough rises because of yeast”</li>
 </ol>
-<p>Temperature, acidity</p>
+<p>Temperature, acidity affect the rate of the yeast’s activity.</p>
 <ol start="2" style="list-style-type: decimal">
 <li>“Education leads to higher income”</li>
 </ol>
@@ -194,22 +194,59 @@ $(document).ready(function () {
 </div>
 <div id="e2" class="section level1">
 <h1>7E2</h1>
+<p>Which of the following explanations invokes an interaction?</p>
+<ol style="list-style-type: decimal">
+<li>Yes, because you need to do both things together. One or the other won’t result in caramelization.</li>
+<li>No, these sound like independent things that would both separately contribute to speed even if not in combination.</li>
+<li>Yes, they get them from parents only if they didn’t get them from their friends. The beliefs don’t combine in any way, so they’re dependent on each other. (this one feels like it’s debatable)</li>
+<li>Yes, because they either are highly social or have appendages, and having both is not required.</li>
+</ol>
+<p>and vs. or</p>
 </div>
 <div id="e3" class="section level1">
 <h1>7E3</h1>
+<p><em>For each of the explanations in 7E2, write a linear model that expresses the stated relationship.</em></p>
+<ol style="list-style-type: decimal">
+<li>caramelizing ~ heat * wetness</li>
+<li>speed ~ cylinders + fuel_injector_quality</li>
+<li>political_beliefs ~ parents_beliefs * friends_beliefs</li>
+<li>species_intelligence ~ sociality + appendages_manipulativity</li>
+</ol>
 </div>
 <div id="m1" class="section level1">
 <h1>7M1</h1>
+<p><em>Recall the tulips example from the chapter…suppose that none of the plants grown under the hot temperature developed any blooms at all, regardless of the water and shade levels. Can you explain this result in terms of interations between water, shade, and temperature?</em></p>
+<p>If the weather is hot, it doesn’t matter how much you water or shade the plants because it’s too hot for them to grow. That factor dominates. Once you lower the temperature, the plants have a fighting chance and then the amount of water and shade affects the growth rate more.</p>
 </div>
 <div id="m2" class="section level1">
 <h1>7M2</h1>
+<p><em>Can you invent a regression equation that would make the bloom size zero, whenever the temperature is hot?</em></p>
+<p>Let T = 0 when it is hot, and T = 1 when it is cold.</p>
+<pre><code>b ~ Normal(mu, sigma)
+
+mu &lt;- 0 +  # no intercept term
+      beta_t * T + 
+      beta_wt * W * T + 
+      beta_st * S * T + 
+      beta_wst * W * S * T</code></pre>
+<p>When T = 0 (and it’s hot) all terms are zero and thus B = 0 (MAP, at least).</p>
+<p>When T = 1 (and it’s cooler) this becomes the original blooms regression we had with a single interaction term between W and S. beta_t will take the same value that alpha had in the original distribution: the grand mean of blooms.</p>
 </div>
 <div id="m3" class="section level1">
 <h1>7M3</h1>
+<p><em>Wolves kill and ravens co-feed, so the ravens depend on wolves for their food. Can you invent a hypothetical set of data on raven population size in which this relationship would manifest as a statistical interaction? Do you think the biological interaction could be linear? Why or why not?</em></p>
+<p>This sounds like the previous problem, where the ravens can’t survive at all if the wolves aren’t around. So fewer wolves should mean fewer ravens. But more wolves won’t necessarily mean more ravens, since the wolves don’t need the ravens to feed. It’s a one-way benefit.</p>
+<p>Right now I’m thinking of a data set that would have various populations of ravens and various populatons of wolves, but NEVER had large populations of ravens when the wolf population is small. In other words, ravens can only flourish when there are wolves around, but the wolf population doesn’t depend on the number of ravens. This feels asymmetrical to me in a way that the examples in the book didn’t.</p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud29sZl9wb3AgIDwtIGMoMCwgMCwgNTAsIDUwLCAxMDAsIDEwMCkgXG5yYXZlbl9wb3AgPC0gYygwLCAwLCAwLCAgNTAsICAgMCwgMTAwKVxuYGBgIn0= -->
+<pre class="r"><code>wolf_pop  &lt;- c(0, 0, 50, 50, 100, 100) 
+raven_pop &lt;- c(0, 0, 0,  50,   0, 100)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvYmxlbXMgZnJvbSBDaGFwdGVyIDcgb2YgU3RhdGlzdGljYWwgUmV0aGlua2luZyIKb3V0cHV0OiBodG1sX25vdGVib29rCmF1dGhvcjogIlNhc2hhIExhdW5keSIKLS0tCgojIDdFMQoKTmFtZSBhIGh5cG90aGV0aWNhbCB0aGlyZCB2YXJpYWJsZSB0aGF0IHdvdWxkIGxlYWQgdG8gYW4gaW50ZXJhY3Rpb24gZWZmZWN0OiAKCjEuICJCcmVhZCBkb3VnaCByaXNlcyBiZWNhdXNlIG9mIHllYXN0IiAKClRlbXBlcmF0dXJlLCBhY2lkaXR5CgoyLiAiRWR1Y2F0aW9uIGxlYWRzIHRvIGhpZ2hlciBpbmNvbWUiIAogCkdlbmRlciwgcmFjZSwgc29jaW9lY29ub21pYyBzdGF0dXMsIHllYXIgKGRpZCB5b3UgZ3JhZHVhdGUgaW4gYSBkb3duIHllYXI/KSwgbWFqb3IKCjMuICJHYXNvbGluZSBtYWtlcyBhIGNhciBnbyIKCkN5Y2xpbmRlcnMgaW4gdGhlIGVuZ2luZSAocmF0ZSBhdCB3aGljaCBnYXNvbGluZSBtYWtlcyB0aGUgY2FyIGdvIGRlcGVuZHMgb24gdGhlIHNpemUgb2YgdGhlIGVuZ2luZSksIHR5cGUgb2YgZW5naW5lIChlbGVjdHJpYyBjYXJzIGRvbid0IG5lZWQgZ2FzIGF0IGFsbCkKCl9JJ20gZmluZGluZyB0aGF0IEknbSB0aGlua2luZyAid2VsbCwgaXQgZGVwZW5kcyIgZm9yIGEgbG90IG9mIHRoZXNlIGFuZCBJJ20gbm90IHN1cmUgdGhhdCdzIHN1ZmZpY2llbnQuIAoKIyA3RTIKIyA3RTMKIyA3TTEKIyA3TTIKIyA3TTM=</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvYmxlbXMgZnJvbSBDaGFwdGVyIDcgb2YgU3RhdGlzdGljYWwgUmV0aGlua2luZyIKb3V0cHV0OiBodG1sX25vdGVib29rCmF1dGhvcjogIlNhc2hhIExhdW5keSIKLS0tCgojIDdFMQoKTmFtZSBhIGh5cG90aGV0aWNhbCB0aGlyZCB2YXJpYWJsZSB0aGF0IHdvdWxkIGxlYWQgdG8gYW4gaW50ZXJhY3Rpb24gZWZmZWN0OiAKCjEuICJCcmVhZCBkb3VnaCByaXNlcyBiZWNhdXNlIG9mIHllYXN0IiAKClRlbXBlcmF0dXJlLCBhY2lkaXR5IGFmZmVjdCB0aGUgcmF0ZSBvZiB0aGUgeWVhc3QncyBhY3Rpdml0eS4gCgoyLiAiRWR1Y2F0aW9uIGxlYWRzIHRvIGhpZ2hlciBpbmNvbWUiIAogCkdlbmRlciwgcmFjZSwgc29jaW9lY29ub21pYyBzdGF0dXMsIHllYXIgKGRpZCB5b3UgZ3JhZHVhdGUgaW4gYSBkb3duIHllYXI/KSwgbWFqb3IKCjMuICJHYXNvbGluZSBtYWtlcyBhIGNhciBnbyIKCkN5Y2xpbmRlcnMgaW4gdGhlIGVuZ2luZSAocmF0ZSBhdCB3aGljaCBnYXNvbGluZSBtYWtlcyB0aGUgY2FyIGdvIGRlcGVuZHMgb24gdGhlIHNpemUgb2YgdGhlIGVuZ2luZSksIHR5cGUgb2YgZW5naW5lIChlbGVjdHJpYyBjYXJzIGRvbid0IG5lZWQgZ2FzIGF0IGFsbCkKCl9JJ20gZmluZGluZyB0aGF0IEknbSB0aGlua2luZyAid2VsbCwgaXQgZGVwZW5kcyIgZm9yIGEgbG90IG9mIHRoZXNlIGFuZCBJJ20gbm90IHN1cmUgdGhhdCdzIHN1ZmZpY2llbnQuIAoKIyA3RTIKCldoaWNoIG9mIHRoZSBmb2xsb3dpbmcgZXhwbGFuYXRpb25zIGludm9rZXMgYW4gaW50ZXJhY3Rpb24/CgoxLiBZZXMsIGJlY2F1c2UgeW91IG5lZWQgdG8gZG8gYm90aCB0aGluZ3MgdG9nZXRoZXIuIE9uZSBvciB0aGUgb3RoZXIgd29uJ3QgcmVzdWx0IGluIGNhcmFtZWxpemF0aW9uLiAKMi4gTm8sIHRoZXNlIHNvdW5kIGxpa2UgaW5kZXBlbmRlbnQgdGhpbmdzIHRoYXQgd291bGQgYm90aCBzZXBhcmF0ZWx5IGNvbnRyaWJ1dGUgdG8gc3BlZWQgZXZlbiBpZiBub3QgaW4gY29tYmluYXRpb24uIAozLiBZZXMsIHRoZXkgZ2V0IHRoZW0gZnJvbSBwYXJlbnRzIG9ubHkgaWYgdGhleSBkaWRuJ3QgZ2V0IHRoZW0gZnJvbSB0aGVpciBmcmllbmRzLiBUaGUgYmVsaWVmcyBkb24ndCBjb21iaW5lIGluIGFueSB3YXksIHNvIHRoZXkncmUgZGVwZW5kZW50IG9uIGVhY2ggb3RoZXIuICh0aGlzIG9uZSBmZWVscyBsaWtlIGl0J3MgZGViYXRhYmxlKQo0LiBZZXMsIGJlY2F1c2UgdGhleSBlaXRoZXIgYXJlIGhpZ2hseSBzb2NpYWwgb3IgaGF2ZSBhcHBlbmRhZ2VzLCBhbmQgaGF2aW5nIGJvdGggaXMgbm90IHJlcXVpcmVkLiAKCmFuZCB2cy4gb3IKCiMgN0UzCgpfRm9yIGVhY2ggb2YgdGhlIGV4cGxhbmF0aW9ucyBpbiA3RTIsIHdyaXRlIGEgbGluZWFyIG1vZGVsIHRoYXQgZXhwcmVzc2VzIHRoZSBzdGF0ZWQgcmVsYXRpb25zaGlwLl8KCjEuIGNhcmFtZWxpemluZyB+IGhlYXQgKiB3ZXRuZXNzCjIuIHNwZWVkIH4gY3lsaW5kZXJzICsgZnVlbF9pbmplY3Rvcl9xdWFsaXR5CjMuIHBvbGl0aWNhbF9iZWxpZWZzIH4gcGFyZW50c19iZWxpZWZzICogZnJpZW5kc19iZWxpZWZzCjQuIHNwZWNpZXNfaW50ZWxsaWdlbmNlIH4gc29jaWFsaXR5ICsgYXBwZW5kYWdlc19tYW5pcHVsYXRpdml0eQoKIyA3TTEKCl9SZWNhbGwgdGhlIHR1bGlwcyBleGFtcGxlIGZyb20gdGhlIGNoYXB0ZXIuLi5zdXBwb3NlIHRoYXQgbm9uZSBvZiB0aGUgcGxhbnRzIGdyb3duIHVuZGVyIHRoZSBob3QgdGVtcGVyYXR1cmUgZGV2ZWxvcGVkIGFueSBibG9vbXMgYXQgYWxsLCByZWdhcmRsZXNzIG9mIHRoZSB3YXRlciBhbmQgc2hhZGUgbGV2ZWxzLiBDYW4geW91IGV4cGxhaW4gdGhpcyByZXN1bHQgaW4gdGVybXMgb2YgaW50ZXJhdGlvbnMgYmV0d2VlbiB3YXRlciwgc2hhZGUsIGFuZCB0ZW1wZXJhdHVyZT9fCgpJZiB0aGUgd2VhdGhlciBpcyBob3QsIGl0IGRvZXNuJ3QgbWF0dGVyIGhvdyBtdWNoIHlvdSB3YXRlciBvciBzaGFkZSB0aGUgcGxhbnRzIGJlY2F1c2UgaXQncyB0b28gaG90IGZvciB0aGVtIHRvIGdyb3cuIFRoYXQgZmFjdG9yIGRvbWluYXRlcy4gT25jZSB5b3UgbG93ZXIgdGhlIHRlbXBlcmF0dXJlLCB0aGUgcGxhbnRzIGhhdmUgYSBmaWdodGluZyBjaGFuY2UgYW5kIHRoZW4gdGhlIGFtb3VudCBvZiB3YXRlciBhbmQgc2hhZGUgYWZmZWN0cyB0aGUgZ3Jvd3RoIHJhdGUgbW9yZS4gCgojIDdNMgoKX0NhbiB5b3UgaW52ZW50IGEgcmVncmVzc2lvbiBlcXVhdGlvbiB0aGF0IHdvdWxkIG1ha2UgdGhlIGJsb29tIHNpemUgemVybywgd2hlbmV2ZXIgdGhlIHRlbXBlcmF0dXJlIGlzIGhvdD9fCgpMZXQgVCA9IDAgd2hlbiBpdCBpcyBob3QsIGFuZCBUID0gMSB3aGVuIGl0IGlzIGNvbGQuIAoKYGBge30KYiB+IE5vcm1hbChtdSwgc2lnbWEpCgptdSA8LSAwICsgICMgbm8gaW50ZXJjZXB0IHRlcm0KICAgICAgYmV0YV90ICogVCArIAogICAgICBiZXRhX3d0ICogVyAqIFQgKyAKICAgICAgYmV0YV9zdCAqIFMgKiBUICsgCiAgICAgIGJldGFfd3N0ICogVyAqIFMgKiBUCmBgYAoKV2hlbiBUID0gMCAoYW5kIGl0J3MgaG90KSBhbGwgdGVybXMgYXJlIHplcm8gYW5kIHRodXMgQiA9IDAgKE1BUCwgYXQgbGVhc3QpLgoKV2hlbiBUID0gMSAoYW5kIGl0J3MgY29vbGVyKSB0aGlzIGJlY29tZXMgdGhlIG9yaWdpbmFsIGJsb29tcyByZWdyZXNzaW9uIHdlIGhhZCB3aXRoIGEgc2luZ2xlIGludGVyYWN0aW9uIHRlcm0gYmV0d2VlbiBXIGFuZCBTLiBiZXRhX3Qgd2lsbCB0YWtlIHRoZSBzYW1lIHZhbHVlIHRoYXQgYWxwaGEgaGFkIGluIHRoZSBvcmlnaW5hbCBkaXN0cmlidXRpb246IHRoZSBncmFuZCBtZWFuIG9mIGJsb29tcy4gCgojIDdNMwoKX1dvbHZlcyBraWxsIGFuZCByYXZlbnMgY28tZmVlZCwgc28gdGhlIHJhdmVucyBkZXBlbmQgb24gd29sdmVzIGZvciB0aGVpciBmb29kLiBDYW4geW91IGludmVudCBhIGh5cG90aGV0aWNhbCBzZXQgb2YgZGF0YSBvbiByYXZlbiBwb3B1bGF0aW9uIHNpemUgaW4gd2hpY2ggdGhpcyByZWxhdGlvbnNoaXAgd291bGQgbWFuaWZlc3QgYXMgYSBzdGF0aXN0aWNhbCBpbnRlcmFjdGlvbj8gRG8geW91IHRoaW5rIHRoZSBiaW9sb2dpY2FsIGludGVyYWN0aW9uIGNvdWxkIGJlIGxpbmVhcj8gV2h5IG9yIHdoeSBub3Q/XwoKVGhpcyBzb3VuZHMgbGlrZSB0aGUgcHJldmlvdXMgcHJvYmxlbSwgd2hlcmUgdGhlIHJhdmVucyBjYW4ndCBzdXJ2aXZlIGF0IGFsbCBpZiB0aGUgd29sdmVzIGFyZW4ndCBhcm91bmQuIFNvIGZld2VyIHdvbHZlcyBzaG91bGQgbWVhbiBmZXdlciByYXZlbnMuIEJ1dCBtb3JlIHdvbHZlcyB3b24ndCBuZWNlc3NhcmlseSBtZWFuIG1vcmUgcmF2ZW5zLCBzaW5jZSB0aGUgd29sdmVzIGRvbid0IG5lZWQgdGhlIHJhdmVucyB0byBmZWVkLiBJdCdzIGEgb25lLXdheSBiZW5lZml0LiAKClJpZ2h0IG5vdyBJJ20gdGhpbmtpbmcgb2YgYSBkYXRhIHNldCB0aGF0IHdvdWxkIGhhdmUgdmFyaW91cyBwb3B1bGF0aW9ucyBvZiByYXZlbnMgYW5kIHZhcmlvdXMgcG9wdWxhdG9ucyBvZiB3b2x2ZXMsIGJ1dCBORVZFUiBoYWQgbGFyZ2UgcG9wdWxhdGlvbnMgb2YgcmF2ZW5zIHdoZW4gdGhlIHdvbGYgcG9wdWxhdGlvbiBpcyBzbWFsbC4gSW4gb3RoZXIgd29yZHMsIHJhdmVucyBjYW4gb25seSBmbG91cmlzaCB3aGVuIHRoZXJlIGFyZSB3b2x2ZXMgYXJvdW5kLCBidXQgdGhlIHdvbGYgcG9wdWxhdGlvbiBkb2Vzbid0IGRlcGVuZCBvbiB0aGUgbnVtYmVyIG9mIHJhdmVucy4gVGhpcyBmZWVscyBhc3ltbWV0cmljYWwgdG8gbWUgaW4gYSB3YXkgdGhhdCB0aGUgZXhhbXBsZXMgaW4gdGhlIGJvb2sgZGlkbid0LiAKCmBgYHtyfQp3b2xmX3BvcCAgPC0gYygwLCAwLCA1MCwgNTAsIDEwMCwgMTAwKSAKcmF2ZW5fcG9wIDwtIGMoMCwgMCwgMCwgIDUwLCAgIDAsIDEwMCkKYGBg</div>
 
 
 

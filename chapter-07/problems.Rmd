@@ -10,7 +10,7 @@ Name a hypothetical third variable that would lead to an interaction effect:
 
 1. "Bread dough rises because of yeast" 
 
-Temperature, acidity
+Temperature, acidity affect the rate of the yeast's activity. 
 
 2. "Education leads to higher income" 
  
@@ -23,7 +23,60 @@ Cyclinders in the engine (rate at which gasoline makes the car go depends on the
 _I'm finding that I'm thinking "well, it depends" for a lot of these and I'm not sure that's sufficient. 
 
 # 7E2
+
+Which of the following explanations invokes an interaction?
+
+1. Yes, because you need to do both things together. One or the other won't result in caramelization. 
+2. No, these sound like independent things that would both separately contribute to speed even if not in combination. 
+3. Yes, they get them from parents only if they didn't get them from their friends. The beliefs don't combine in any way, so they're dependent on each other. (this one feels like it's debatable)
+4. Yes, because they either are highly social or have appendages, and having both is not required. 
+
+and vs. or
+
 # 7E3
+
+_For each of the explanations in 7E2, write a linear model that expresses the stated relationship._
+
+1. caramelizing ~ heat * wetness
+2. speed ~ cylinders + fuel_injector_quality
+3. political_beliefs ~ parents_beliefs * friends_beliefs
+4. species_intelligence ~ sociality + appendages_manipulativity
+
 # 7M1
+
+_Recall the tulips example from the chapter...suppose that none of the plants grown under the hot temperature developed any blooms at all, regardless of the water and shade levels. Can you explain this result in terms of interations between water, shade, and temperature?_
+
+If the weather is hot, it doesn't matter how much you water or shade the plants because it's too hot for them to grow. That factor dominates. Once you lower the temperature, the plants have a fighting chance and then the amount of water and shade affects the growth rate more. 
+
 # 7M2
+
+_Can you invent a regression equation that would make the bloom size zero, whenever the temperature is hot?_
+
+Let T = 0 when it is hot, and T = 1 when it is cold. 
+
+```{}
+b ~ Normal(mu, sigma)
+
+mu <- 0 +  # no intercept term
+      beta_t * T + 
+      beta_wt * W * T + 
+      beta_st * S * T + 
+      beta_wst * W * S * T
+```
+
+When T = 0 (and it's hot) all terms are zero and thus B = 0 (MAP, at least).
+
+When T = 1 (and it's cooler) this becomes the original blooms regression we had with a single interaction term between W and S. beta_t will take the same value that alpha had in the original distribution: the grand mean of blooms. 
+
 # 7M3
+
+_Wolves kill and ravens co-feed, so the ravens depend on wolves for their food. Can you invent a hypothetical set of data on raven population size in which this relationship would manifest as a statistical interaction? Do you think the biological interaction could be linear? Why or why not?_
+
+This sounds like the previous problem, where the ravens can't survive at all if the wolves aren't around. So fewer wolves should mean fewer ravens. But more wolves won't necessarily mean more ravens, since the wolves don't need the ravens to feed. It's a one-way benefit. 
+
+Right now I'm thinking of a data set that would have various populations of ravens and various populatons of wolves, but NEVER had large populations of ravens when the wolf population is small. In other words, ravens can only flourish when there are wolves around, but the wolf population doesn't depend on the number of ravens. This feels asymmetrical to me in a way that the examples in the book didn't. 
+
+```{r}
+wolf_pop  <- c(0, 0, 50, 50, 100, 100) 
+raven_pop <- c(0, 0, 0,  50,   0, 100)
+```
