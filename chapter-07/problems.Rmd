@@ -1,0 +1,29 @@
+---
+title: "Problems from Chapter 7 of Statistical Rethinking"
+output: html_notebook
+author: "Sasha Laundy"
+---
+
+# 7E1
+
+Name a hypothetical third variable that would lead to an interaction effect: 
+
+1. "Bread dough rises because of yeast" 
+
+Temperature, acidity
+
+2. "Education leads to higher income" 
+ 
+Gender, race, socioeconomic status, year (did you graduate in a down year?), major
+
+3. "Gasoline makes a car go"
+
+Cyclinders in the engine (rate at which gasoline makes the car go depends on the size of the engine), type of engine (electric cars don't need gas at all)
+
+_I'm finding that I'm thinking "well, it depends" for a lot of these and I'm not sure that's sufficient. 
+
+# 7E2
+# 7E3
+# 7M1
+# 7M2
+# 7M3
