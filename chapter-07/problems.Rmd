@@ -10,28 +10,26 @@ Name a hypothetical third variable that would lead to an interaction effect:
 
 1. "Bread dough rises because of yeast" 
 
-Temperature, acidity affect the rate of the yeast's activity. 
+Temperature, acidity, altitude affect the rate of the yeast's activity. 
 
 2. "Education leads to higher income" 
  
-Gender, race, socioeconomic status, year (did you graduate in a down year?), major
+Gender, race, socioeconomic status, year (did you graduate in a down year?), major, terminal degree (PhDs earn less than Master's degree)
 
 3. "Gasoline makes a car go"
 
 Cyclinders in the engine (rate at which gasoline makes the car go depends on the size of the engine), type of engine (electric cars don't need gas at all)
 
-_I'm finding that I'm thinking "well, it depends" for a lot of these and I'm not sure that's sufficient. 
-
 # 7E2
 
 Which of the following explanations invokes an interaction?
 
-1. Yes, because you need to do both things together. One or the other won't result in caramelization. 
+1. Yes, because you need to do both things together. One or the other by itself won't result in caramelization. 
 2. No, these sound like independent things that would both separately contribute to speed even if not in combination. 
 3. Yes, they get them from parents only if they didn't get them from their friends. The beliefs don't combine in any way, so they're dependent on each other. (this one feels like it's debatable)
-4. Yes, because they either are highly social or have appendages, and having both is not required. 
+4. No, because they either are highly social or have appendages, and having both is not required. 
 
-and vs. or
+I'm noticing that "and" and "not or" relationships tend to be interactions, and "or" relationships tend to _not_ be 
 
 # 7E3
 
@@ -40,6 +38,7 @@ _For each of the explanations in 7E2, write a linear model that expresses the st
 1. caramelizing ~ heat * wetness
 2. speed ~ cylinders + fuel_injector_quality
 3. political_beliefs ~ parents_beliefs * friends_beliefs
+B ~ P + F + P:F
 4. species_intelligence ~ sociality + appendages_manipulativity
 
 # 7M1
@@ -74,9 +73,18 @@ _Wolves kill and ravens co-feed, so the ravens depend on wolves for their food. 
 
 This sounds like the previous problem, where the ravens can't survive at all if the wolves aren't around. So fewer wolves should mean fewer ravens. But more wolves won't necessarily mean more ravens, since the wolves don't need the ravens to feed. It's a one-way benefit. 
 
-Right now I'm thinking of a data set that would have various populations of ravens and various populatons of wolves, but NEVER had large populations of ravens when the wolf population is small. In other words, ravens can only flourish when there are wolves around, but the wolf population doesn't depend on the number of ravens. This feels asymmetrical to me in a way that the examples in the book didn't. 
+Right now I'm thinking of a data set that would have various populations of ravens and various populatons of wolves, but NEVER had large populations of ravens when the wolf population is small. In other words, ravens can only flourish when there are wolves around, but the wolf population doesn't depend on the number of ravens. Hmm...this feels asymmetrical to me in a way that the examples in the book didn't. 
 
 ```{r}
 wolf_pop  <- c(0, 0, 50, 50, 100, 100) 
-raven_pop <- c(0, 0, 0,  50,   0, 100)
+raven_pop <- c(0, 0,  0, 50,   0, 100)
 ```
+
+[we worked out the below model together in our study group]
+
+To make this a full model, we need some sort of third variable that is ignored when there are no wolves, but helps predict when there will be ravens under the condition that there are sufficient wolves. Let's use P to mean "the availability of prey". Our model could look like this: 
+
+$$R \sim \alpha + \gamma W\\
+\gamma = \beta_W + \beta_{WP}P$$
+
+Oh, the symmetry is between wolves and prey! 
