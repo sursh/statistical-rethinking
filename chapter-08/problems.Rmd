@@ -1,0 +1,17 @@
+---
+title: "Problems from Chapter 8 of Statistical Rethinking"
+output: html_notebook
+author: "Sasha Laundy"
+---
+
+# 8E1
+# 8E2
+# 8E3
+# 8E4
+# 8E5
+# 8E6
+# 8M1
+# 8M2
+# 8M3
+# 8H3
+# 8H4
