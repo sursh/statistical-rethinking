@@ -5,13 +5,63 @@ author: "Sasha Laundy"
 ---
 
 # 8E1
+
+Which of the following is a requirement of the simple Metropolis algo?
+
+- _The parameters must be discrete_. No, they can be discrete or continuous. 
+- _The likelihood function must be gaussian_. ? I didn't see this mentioned in the book but I don't see any reason why it should be required.
+- _The proposal distribution must be symmetric_. Yes, the chance of going from A to B must be the same as going from B to A. 
+
 # 8E2
+
+_Gibbs is more efficient than Metropolis. How does this achieve this efficiency? are there any limitations to the gibbs sampling strategy?_
+
+It's more efficient because it chooses its proposals strategically, so it wastes less time wandering around and gets similar results in fewer steps. 
+
 # 8E3
+
+_Which sort of parameters can Hamiltonian Monte Carlo not handle? Can you explain why?_
+
+It can't handle discrete parameters, because it's not a "smooth bowl" to glide across. The book doesn't go into depth on this topic, but I'm assuming you need to be able to compute a gradient and then adjust your step size proportionally, and discrete parameters don't have a continuous gradient. 
+
 # 8E4
+
+_Explain the difference between the effective number of samples, `n_eff` as calculated by Stan, and the actual number of samples._
+
+The effective number of samples is an estimate of the number of uncorrelated samples drawn by Stan. Since there is always _some_ autocorrelation, `n_eff` will always be lower than the actual number of samples. 
+
 # 8E5
+
+_Which value should `Rhat` approach, when a chain is sampling the posterior distribution correctly?_
+
+It should approach 1.00 from above. Even 1.01 is "suspicious." They did not explain why. 
+
 # 8E6
+
+_Sketch a good trace plot for a Markov chain, on that is effectively sampling from the posterior distribution What is good about its shape?_
+
+I can't easily type one here, but there are good examples on page 254. They are good because their mean is quite stable throughout the post-sampling part of the plot, and they are not autocorrelated (the "rapid zig-zag" look)
+
+_Then sketch a trace plot for a malfunctioning Markov chain. What about its shape indiciates malfunction?_
+
+tk
+
 # 8M1
+
+Re-estimate the terrain ruggedness model from the chapter, but now using a unfirom prior and an exponential prior for the standard deviatie, `sigm`. The unfiram prior should be `dunif(0, 10)` and the exponential shoudl be `dexp(1)`. Do the different priors have any detectible influnec on the posterior distribution?
+
 # 8M2
+
+The Cauchy and exponetial priors from the terrain ruggednes model are very weak. They can be made more informative by reducing their scael. Compare the `dcauchy` and `dexp` priors for progressively smaller values of the scaling parameter. As these priors become stronger, how does each inflence the posterior distribution?
+
 # 8M3
+
+Re-estimate on eof the Stan models from the chapter, but at different numebrs of warmup iterations. Be sure to use the same number of sampling iterations in each case. Compare the `n_eff` values. How much warmup is enough?
+
 # 8H3
+
+Sometimes changing a prior for one parameter has unanticipated effects on other parameters. This is because when a parameter is highly correlated wihth another parameter in the postiori, the prior inflences both parameters. Let's work through an example. [See the book for the rest of the question. p 264]
+
 # 8H4
+
+For the two models fit in the previous problem, use DIC or WAIC to compare the effective numbers of parameters for each model. Which model has more effective parameters? Why?

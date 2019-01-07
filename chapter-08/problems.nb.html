@@ -180,40 +180,63 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <div id="e1" class="section level1">
 <h1>8E1</h1>
+<p>Which of the following is a requirement of the simple Metropolis algo?</p>
+<ul>
+<li><em>The parameters must be discrete</em>. No, they can be discrete or continuous.</li>
+<li><em>The likelihood function must be gaussian</em>. ? I didn’t see this mentioned in the book but I don’t see any reason why it should be required.</li>
+<li><em>The proposal distribution must be symmetric</em>. Yes, the chance of going from A to B must be the same as going from B to A.</li>
+</ul>
 </div>
 <div id="e2" class="section level1">
 <h1>8E2</h1>
+<p><em>Gibbs is more efficient than Metropolis. How does this achieve this efficiency? are there any limitations to the gibbs sampling strategy?</em></p>
+<p>It’s more efficient because it chooses its proposals strategically, so it wastes less time wandering around and gets similar results in fewer steps.</p>
 </div>
 <div id="e3" class="section level1">
 <h1>8E3</h1>
+<p><em>Which sort of parameters can Hamiltonian Monte Carlo not handle? Can you explain why?</em></p>
+<p>It can’t handle discrete parameters, because it’s not a “smooth bowl” to glide across. The book doesn’t go into depth on this topic, but I’m assuming you need to be able to compute a gradient and then adjust your step size proportionally, and discrete parameters don’t have a continuous gradient.</p>
 </div>
 <div id="e4" class="section level1">
 <h1>8E4</h1>
+<p><em>Explain the difference between the effective number of samples, <code>n_eff</code> as calculated by Stan, and the actual number of samples.</em></p>
+<p>The effective number of samples is an estimate of the number of uncorrelated samples drawn by Stan. Since there is always <em>some</em> autocorrelation, <code>n_eff</code> will always be lower than the actual number of samples.</p>
 </div>
 <div id="e5" class="section level1">
 <h1>8E5</h1>
+<p><em>Which value should <code>Rhat</code> approach, when a chain is sampling the posterior distribution correctly?</em></p>
+<p>It should approach 1.00 from above. Even 1.01 is “suspicious.” They did not explain why.</p>
 </div>
 <div id="e6" class="section level1">
 <h1>8E6</h1>
+<p><em>Sketch a good trace plot for a Markov chain, on that is effectively sampling from the posterior distribution What is good about its shape?</em></p>
+<p>I can’t easily type one here, but there are good examples on page 254. They are good because their mean is quite stable throughout the post-sampling part of the plot, and they are not autocorrelated (the “rapid zig-zag” look)</p>
+<p><em>Then sketch a trace plot for a malfunctioning Markov chain. What about its shape indiciates malfunction?</em></p>
+<p>tk</p>
 </div>
 <div id="m1" class="section level1">
 <h1>8M1</h1>
+<p>Re-estimate the terrain ruggedness model from the chapter, but now using a unfirom prior and an exponential prior for the standard deviatie, <code>sigm</code>. The unfiram prior should be <code>dunif(0, 10)</code> and the exponential shoudl be <code>dexp(1)</code>. Do the different priors have any detectible influnec on the posterior distribution?</p>
 </div>
 <div id="m2" class="section level1">
 <h1>8M2</h1>
+<p>The Cauchy and exponetial priors from the terrain ruggednes model are very weak. They can be made more informative by reducing their scael. Compare the <code>dcauchy</code> and <code>dexp</code> priors for progressively smaller values of the scaling parameter. As these priors become stronger, how does each inflence the posterior distribution?</p>
 </div>
 <div id="m3" class="section level1">
 <h1>8M3</h1>
+<p>Re-estimate on eof the Stan models from the chapter, but at different numebrs of warmup iterations. Be sure to use the same number of sampling iterations in each case. Compare the <code>n_eff</code> values. How much warmup is enough?</p>
 </div>
 <div id="h3" class="section level1">
 <h1>8H3</h1>
+<p>Sometimes changing a prior for one parameter has unanticipated effects on other parameters. This is because when a parameter is highly correlated wihth another parameter in the postiori, the prior inflences both parameters. Let’s work through an example. [See the book for the rest of the question. p 264]</p>
 </div>
 <div id="h4" class="section level1">
 <h1>8H4</h1>
+<p>For the two models fit in the previous problem, use DIC or WAIC to compare the effective numbers of parameters for each model. Which model has more effective parameters? Why?</p>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvYmxlbXMgZnJvbSBDaGFwdGVyIDggb2YgU3RhdGlzdGljYWwgUmV0aGlua2luZyIKb3V0cHV0OiBodG1sX25vdGVib29rCmF1dGhvcjogIlNhc2hhIExhdW5keSIKLS0tCgojIDhFMQojIDhFMgojIDhFMwojIDhFNAojIDhFNQojIDhFNgojIDhNMQojIDhNMgojIDhNMwojIDhIMwojIDhINA==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUHJvYmxlbXMgZnJvbSBDaGFwdGVyIDggb2YgU3RhdGlzdGljYWwgUmV0aGlua2luZyIKb3V0cHV0OiBodG1sX25vdGVib29rCmF1dGhvcjogIlNhc2hhIExhdW5keSIKLS0tCgojIDhFMQoKV2hpY2ggb2YgdGhlIGZvbGxvd2luZyBpcyBhIHJlcXVpcmVtZW50IG9mIHRoZSBzaW1wbGUgTWV0cm9wb2xpcyBhbGdvPwoKLSBfVGhlIHBhcmFtZXRlcnMgbXVzdCBiZSBkaXNjcmV0ZV8uIE5vLCB0aGV5IGNhbiBiZSBkaXNjcmV0ZSBvciBjb250aW51b3VzLiAKLSBfVGhlIGxpa2VsaWhvb2QgZnVuY3Rpb24gbXVzdCBiZSBnYXVzc2lhbl8uID8gSSBkaWRuJ3Qgc2VlIHRoaXMgbWVudGlvbmVkIGluIHRoZSBib29rIGJ1dCBJIGRvbid0IHNlZSBhbnkgcmVhc29uIHdoeSBpdCBzaG91bGQgYmUgcmVxdWlyZWQuCi0gX1RoZSBwcm9wb3NhbCBkaXN0cmlidXRpb24gbXVzdCBiZSBzeW1tZXRyaWNfLiBZZXMsIHRoZSBjaGFuY2Ugb2YgZ29pbmcgZnJvbSBBIHRvIEIgbXVzdCBiZSB0aGUgc2FtZSBhcyBnb2luZyBmcm9tIEIgdG8gQS4gCgojIDhFMgoKX0dpYmJzIGlzIG1vcmUgZWZmaWNpZW50IHRoYW4gTWV0cm9wb2xpcy4gSG93IGRvZXMgdGhpcyBhY2hpZXZlIHRoaXMgZWZmaWNpZW5jeT8gYXJlIHRoZXJlIGFueSBsaW1pdGF0aW9ucyB0byB0aGUgZ2liYnMgc2FtcGxpbmcgc3RyYXRlZ3k/XwoKSXQncyBtb3JlIGVmZmljaWVudCBiZWNhdXNlIGl0IGNob29zZXMgaXRzIHByb3Bvc2FscyBzdHJhdGVnaWNhbGx5LCBzbyBpdCB3YXN0ZXMgbGVzcyB0aW1lIHdhbmRlcmluZyBhcm91bmQgYW5kIGdldHMgc2ltaWxhciByZXN1bHRzIGluIGZld2VyIHN0ZXBzLiAKCiMgOEUzCgpfV2hpY2ggc29ydCBvZiBwYXJhbWV0ZXJzIGNhbiBIYW1pbHRvbmlhbiBNb250ZSBDYXJsbyBub3QgaGFuZGxlPyBDYW4geW91IGV4cGxhaW4gd2h5P18KCkl0IGNhbid0IGhhbmRsZSBkaXNjcmV0ZSBwYXJhbWV0ZXJzLCBiZWNhdXNlIGl0J3Mgbm90IGEgInNtb290aCBib3dsIiB0byBnbGlkZSBhY3Jvc3MuIFRoZSBib29rIGRvZXNuJ3QgZ28gaW50byBkZXB0aCBvbiB0aGlzIHRvcGljLCBidXQgSSdtIGFzc3VtaW5nIHlvdSBuZWVkIHRvIGJlIGFibGUgdG8gY29tcHV0ZSBhIGdyYWRpZW50IGFuZCB0aGVuIGFkanVzdCB5b3VyIHN0ZXAgc2l6ZSBwcm9wb3J0aW9uYWxseSwgYW5kIGRpc2NyZXRlIHBhcmFtZXRlcnMgZG9uJ3QgaGF2ZSBhIGNvbnRpbnVvdXMgZ3JhZGllbnQuIAoKIyA4RTQKCl9FeHBsYWluIHRoZSBkaWZmZXJlbmNlIGJldHdlZW4gdGhlIGVmZmVjdGl2ZSBudW1iZXIgb2Ygc2FtcGxlcywgYG5fZWZmYCBhcyBjYWxjdWxhdGVkIGJ5IFN0YW4sIGFuZCB0aGUgYWN0dWFsIG51bWJlciBvZiBzYW1wbGVzLl8KClRoZSBlZmZlY3RpdmUgbnVtYmVyIG9mIHNhbXBsZXMgaXMgYW4gZXN0aW1hdGUgb2YgdGhlIG51bWJlciBvZiB1bmNvcnJlbGF0ZWQgc2FtcGxlcyBkcmF3biBieSBTdGFuLiBTaW5jZSB0aGVyZSBpcyBhbHdheXMgX3NvbWVfIGF1dG9jb3JyZWxhdGlvbiwgYG5fZWZmYCB3aWxsIGFsd2F5cyBiZSBsb3dlciB0aGFuIHRoZSBhY3R1YWwgbnVtYmVyIG9mIHNhbXBsZXMuIAoKIyA4RTUKCl9XaGljaCB2YWx1ZSBzaG91bGQgYFJoYXRgIGFwcHJvYWNoLCB3aGVuIGEgY2hhaW4gaXMgc2FtcGxpbmcgdGhlIHBvc3RlcmlvciBkaXN0cmlidXRpb24gY29ycmVjdGx5P18KCkl0IHNob3VsZCBhcHByb2FjaCAxLjAwIGZyb20gYWJvdmUuIEV2ZW4gMS4wMSBpcyAic3VzcGljaW91cy4iIFRoZXkgZGlkIG5vdCBleHBsYWluIHdoeS4gCgojIDhFNgoKX1NrZXRjaCBhIGdvb2QgdHJhY2UgcGxvdCBmb3IgYSBNYXJrb3YgY2hhaW4sIG9uIHRoYXQgaXMgZWZmZWN0aXZlbHkgc2FtcGxpbmcgZnJvbSB0aGUgcG9zdGVyaW9yIGRpc3RyaWJ1dGlvbiBXaGF0IGlzIGdvb2QgYWJvdXQgaXRzIHNoYXBlP18KCkkgY2FuJ3QgZWFzaWx5IHR5cGUgb25lIGhlcmUsIGJ1dCB0aGVyZSBhcmUgZ29vZCBleGFtcGxlcyBvbiBwYWdlIDI1NC4gVGhleSBhcmUgZ29vZCBiZWNhdXNlIHRoZWlyIG1lYW4gaXMgcXVpdGUgc3RhYmxlIHRocm91Z2hvdXQgdGhlIHBvc3Qtc2FtcGxpbmcgcGFydCBvZiB0aGUgcGxvdCwgYW5kIHRoZXkgYXJlIG5vdCBhdXRvY29ycmVsYXRlZCAodGhlICJyYXBpZCB6aWctemFnIiBsb29rKQoKX1RoZW4gc2tldGNoIGEgdHJhY2UgcGxvdCBmb3IgYSBtYWxmdW5jdGlvbmluZyBNYXJrb3YgY2hhaW4uIFdoYXQgYWJvdXQgaXRzIHNoYXBlIGluZGljaWF0ZXMgbWFsZnVuY3Rpb24/XwoKdGsKCiMgOE0xCgpSZS1lc3RpbWF0ZSB0aGUgdGVycmFpbiBydWdnZWRuZXNzIG1vZGVsIGZyb20gdGhlIGNoYXB0ZXIsIGJ1dCBub3cgdXNpbmcgYSB1bmZpcm9tIHByaW9yIGFuZCBhbiBleHBvbmVudGlhbCBwcmlvciBmb3IgdGhlIHN0YW5kYXJkIGRldmlhdGllLCBgc2lnbWAuIFRoZSB1bmZpcmFtIHByaW9yIHNob3VsZCBiZSBgZHVuaWYoMCwgMTApYCBhbmQgdGhlIGV4cG9uZW50aWFsIHNob3VkbCBiZSBgZGV4cCgxKWAuIERvIHRoZSBkaWZmZXJlbnQgcHJpb3JzIGhhdmUgYW55IGRldGVjdGlibGUgaW5mbHVuZWMgb24gdGhlIHBvc3RlcmlvciBkaXN0cmlidXRpb24/CgojIDhNMgoKVGhlIENhdWNoeSBhbmQgZXhwb25ldGlhbCBwcmlvcnMgZnJvbSB0aGUgdGVycmFpbiBydWdnZWRuZXMgbW9kZWwgYXJlIHZlcnkgd2Vhay4gVGhleSBjYW4gYmUgbWFkZSBtb3JlIGluZm9ybWF0aXZlIGJ5IHJlZHVjaW5nIHRoZWlyIHNjYWVsLiBDb21wYXJlIHRoZSBgZGNhdWNoeWAgYW5kIGBkZXhwYCBwcmlvcnMgZm9yIHByb2dyZXNzaXZlbHkgc21hbGxlciB2YWx1ZXMgb2YgdGhlIHNjYWxpbmcgcGFyYW1ldGVyLiBBcyB0aGVzZSBwcmlvcnMgYmVjb21lIHN0cm9uZ2VyLCBob3cgZG9lcyBlYWNoIGluZmxlbmNlIHRoZSBwb3N0ZXJpb3IgZGlzdHJpYnV0aW9uPwoKIyA4TTMKClJlLWVzdGltYXRlIG9uIGVvZiB0aGUgU3RhbiBtb2RlbHMgZnJvbSB0aGUgY2hhcHRlciwgYnV0IGF0IGRpZmZlcmVudCBudW1lYnJzIG9mIHdhcm11cCBpdGVyYXRpb25zLiBCZSBzdXJlIHRvIHVzZSB0aGUgc2FtZSBudW1iZXIgb2Ygc2FtcGxpbmcgaXRlcmF0aW9ucyBpbiBlYWNoIGNhc2UuIENvbXBhcmUgdGhlIGBuX2VmZmAgdmFsdWVzLiBIb3cgbXVjaCB3YXJtdXAgaXMgZW5vdWdoPwoKIyA4SDMKClNvbWV0aW1lcyBjaGFuZ2luZyBhIHByaW9yIGZvciBvbmUgcGFyYW1ldGVyIGhhcyB1bmFudGljaXBhdGVkIGVmZmVjdHMgb24gb3RoZXIgcGFyYW1ldGVycy4gVGhpcyBpcyBiZWNhdXNlIHdoZW4gYSBwYXJhbWV0ZXIgaXMgaGlnaGx5IGNvcnJlbGF0ZWQgd2lodGggYW5vdGhlciBwYXJhbWV0ZXIgaW4gdGhlIHBvc3Rpb3JpLCB0aGUgcHJpb3IgaW5mbGVuY2VzIGJvdGggcGFyYW1ldGVycy4gTGV0J3Mgd29yayB0aHJvdWdoIGFuIGV4YW1wbGUuIFtTZWUgdGhlIGJvb2sgZm9yIHRoZSByZXN0IG9mIHRoZSBxdWVzdGlvbi4gcCAyNjRdCgojIDhINAoKRm9yIHRoZSB0d28gbW9kZWxzIGZpdCBpbiB0aGUgcHJldmlvdXMgcHJvYmxlbSwgdXNlIERJQyBvciBXQUlDIHRvIGNvbXBhcmUgdGhlIGVmZmVjdGl2ZSBudW1iZXJzIG9mIHBhcmFtZXRlcnMgZm9yIGVhY2ggbW9kZWwuIFdoaWNoIG1vZGVsIGhhcyBtb3JlIGVmZmVjdGl2ZSBwYXJhbWV0ZXJzPyBXaHk/</div>
 
 
 
