@@ -135,3 +135,26 @@ post <- piecewise_water_posterior(observed_waters = 3, tosses = 4)
 ```{r}
 post <- piecewise_water_posterior(observed_waters = 5, tosses = 7)
 ```
+
+# 2H1
+
+```{r}
+
+```
+
+
+# 2H2
+```{r}
+
+```
+
+# 2H3
+```{r}
+
+```
+
+# 2H4
+```{r}
+
+```
+
