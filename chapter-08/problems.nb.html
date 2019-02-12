@@ -180,9 +180,21 @@ $(document).ready(function () {
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShyZXRoaW5raW5nKVxuYGBgIn0= -->
 <pre class="r"><code>library(rethinking)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoicmV0aGlua2luZyAoVmVyc2lvbiAxLjU5KVxuIn0= -->
-<pre><code>rethinking (Version 1.59)</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiByc3RhblxuTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBnZ3Bsb3QyXG5wYWNrYWdlIOKAmGdncGxvdDLigJkgd2FzIGJ1aWx0IHVuZGVyIFIgdmVyc2lvbiAzLjMuMkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogU3RhbkhlYWRlcnNcbnJzdGFuIChWZXJzaW9uIDIuMTcuMywgR2l0UmV2OiAyZTFmOTEzZDNjYTMpXG5Gb3IgZXhlY3V0aW9uIG9uIGEgbG9jYWwsIG11bHRpY29yZSBDUFUgd2l0aCBleGNlc3MgUkFNIHdlIHJlY29tbWVuZCBjYWxsaW5nXG5vcHRpb25zKG1jLmNvcmVzID0gcGFyYWxsZWw6OmRldGVjdENvcmVzKCkpLlxuVG8gYXZvaWQgcmVjb21waWxhdGlvbiBvZiB1bmNoYW5nZWQgU3RhbiBwcm9ncmFtcywgd2UgcmVjb21tZW5kIGNhbGxpbmdcbnJzdGFuX29wdGlvbnMoYXV0b193cml0ZSA9IFRSVUUpXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IHBhcmFsbGVsXG5yZXRoaW5raW5nIChWZXJzaW9uIDEuNTkpXG4ifQ== -->
+<pre><code>Loading required package: rstan
+Loading required package: ggplot2
+package ‘ggplot2’ was built under R version 3.3.2Loading required package: StanHeaders
+rstan (Version 2.17.3, GitRev: 2e1f913d3ca3)
+For execution on a local, multicore CPU with excess RAM we recommend calling
+options(mc.cores = parallel::detectCores()).
+To avoid recompilation of unchanged Stan programs, we recommend calling
+rstan_options(auto_write = TRUE)
+Loading required package: parallel
+rethinking (Version 1.59)</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShkcGx5cilcbmBgYCJ9 -->
+<pre class="r"><code>library(dplyr)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <div id="e1" class="section level1">
@@ -226,15 +238,162 @@ $(document).ready(function () {
 <p>Re-estimate the terrain ruggedness model from the chapter, but now using a uniform prior and an exponential prior for the standard deviation, <code>sigma</code>. The uniform prior should be <code>dunif(0, 10)</code> and the exponential should be <code>dexp(1)</code>. Do the different priors have any detectible influence on the posterior distribution?</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3RyKGRkLnRyaW0pXG5cbmBgYCJ9 -->
-<pre class="r"><code>str(dd.trim)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubTguMXN0YW4gPC0gbWFwMnN0YW4oXG4gIGFsaXN0KFxuICAgIGxvZ19nZHAgfiBkbm9ybShtdSwgc2lnbWEpLFxuICAgIG11IDwtIGEgKyBiUiAqIHJ1Z2dlZCArIGJBICogY29udF9hZnJpY2EgKyBiQVIgKiBydWdnZWQgKiBjb250X2FmcmljYSxcbiAgICBhIH4gZG5vcm0oMCwgMTAwKSwgXG4gICAgYlIgfiBkbm9ybSgwLCAxMCksIFxuICAgIGJBIH4gZG5vcm0oMCwgMTApLCBcbiAgICBiQVIgfiBkbm9ybSgwLCAxMCksXG4gICAgc2lnbWEgfiBkY2F1Y2h5KDAsIDIpXG4gICksXG4gIGRhdGEgPSBkZC50cmltXG4pXG5cbmBgYCJ9 -->
+<pre class="r"><code>m8.1stan &lt;- map2stan(
+  alist(
+    log_gdp ~ dnorm(mu, sigma),
+    mu &lt;- a + bR * rugged + bA * cont_africa + bAR * rugged * cont_africa,
+    a ~ dnorm(0, 100), 
+    bR ~ dnorm(0, 10), 
+    bA ~ dnorm(0, 10), 
+    bAR ~ dnorm(0, 10),
+    sigma ~ dcauchy(0, 2)
+  ),
+  data = dd.trim
+)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiJ2RhdGEuZnJhbWUnOlx0MTcwIG9icy4gb2YgIDMgdmFyaWFibGVzOlxuICQgbG9nX2dkcCAgICA6IG51bSAgNy40OSA4LjIyIDkuOTMgOS40MSA3Ljc5IC4uLlxuICQgcnVnZ2VkICAgICA6IG51bSAgMC44NTggMy40MjcgMC43NjkgMC43NzUgMi42ODggLi4uXG4gJCBjb250X2FmcmljYTogaW50ICAxIDAgMCAwIDAgMCAwIDAgMCAxIC4uLlxuIn0= -->
-<pre><code>'data.frame':   170 obs. of  3 variables:
- $ log_gdp    : num  7.49 8.22 9.93 9.41 7.79 ...
- $ rugged     : num  0.858 3.427 0.769 0.775 2.688 ...
- $ cont_africa: int  1 0 0 0 0 0 0 0 0 1 ...</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGZpbGUxNTI5ZDVmNmJkNjk2LmNwcDo4OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3JjL3N0YW4vbW9kZWwvbW9kZWxfaGVhZGVyLmhwcDo0OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoLmhwcDo0OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoL3Jldi9tYXQuaHBwOjQ6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvU3RhbkhlYWRlcnMvaW5jbHVkZS9zdGFuL21hdGgvcmV2L2NvcmUuaHBwOjEyOlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoL3Jldi9jb3JlL2dldnZfdnZ2X3ZhcmkuaHBwOjU6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvU3RhbkhlYWRlcnMvaW5jbHVkZS9zdGFuL21hdGgvcmV2L2NvcmUvdmFyLmhwcDo3OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L0JIL2luY2x1ZGUvYm9vc3QvbWF0aC90b29scy9jb25maWcuaHBwOjEzOlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L0JIL2luY2x1ZGUvYm9vc3QvY29uZmlnLmhwcDozOTpcbi9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L0JIL2luY2x1ZGUvYm9vc3QvY29uZmlnL2NvbXBpbGVyL2NsYW5nLmhwcDoyMDA6MTE6IHdhcm5pbmc6ICdCT09TVF9OT19DWFgxMV9SVkFMVUVfUkVGRVJFTkNFUycgbWFjcm8gcmVkZWZpbmVkIFstV21hY3JvLXJlZGVmaW5lZF1cbiMgIGRlZmluZSBCT09TVF9OT19DWFgxMV9SVkFMVUVfUkVGRVJFTkNFU1xuICAgICAgICAgIF5cbjxjb21tYW5kIGxpbmU+OjY6OTogbm90ZTogcHJldmlvdXMgZGVmaW5pdGlvbiBpcyBoZXJlXG4jZGVmaW5lIEJPT1NUX05PX0NYWDExX1JWQUxVRV9SRUZFUkVOQ0VTIDFcbiAgICAgICAgXlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGZpbGUxNTI5ZDVmNmJkNjk2LmNwcDo4OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3JjL3N0YW4vbW9kZWwvbW9kZWxfaGVhZGVyLmhwcDo0OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoLmhwcDo0OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoL3Jldi9tYXQuaHBwOjQ6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvU3RhbkhlYWRlcnMvaW5jbHVkZS9zdGFuL21hdGgvcmV2L2NvcmUuaHBwOjM2OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoL3Jldi9jb3JlL29wZXJhdG9yX3VuYXJ5X3BsdXMuaHBwOjc6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvU3RhbkhlYWRlcnMvaW5jbHVkZS9zdGFuL21hdGgvcHJpbS9zY2FsL2Z1bi9jb25zdGFudHMuaHBwOjQ6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvQkgvaW5jbHVkZS9ib29zdC9tYXRoL2NvbnN0YW50cy9jb25zdGFudHMuaHBwOjEzOlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L0JIL2luY2x1ZGUvYm9vc3QvbWF0aC90b29scy9jb252ZXJ0X2Zyb21fc3RyaW5nLmhwcDoxNTpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9CSC9pbmNsdWRlL2Jvb3N0L2xleGljYWxfY2FzdC5ocHA6MzI6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvQkgvaW5jbHVkZS9ib29zdC9sZXhpY2FsX2Nhc3QvdHJ5X2xleGljYWxfY29udmVydC5ocHA6NDI6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvQkgvaW5jbHVkZS9ib29zdC9sZXhpY2FsX2Nhc3QvZGV0YWlsL2NvbnZlcnRlcl9sZXhpY2FsLmhwcDo1MjpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9CSC9pbmNsdWRlL2Jvb3N0L2NvbnRhaW5lci9jb250YWluZXJfZndkLmhwcDo2MTpcbi9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L0JIL2luY2x1ZGUvYm9vc3QvY29udGFpbmVyL2RldGFpbC9zdGRfZndkLmhwcDoyNzoxOiB3YXJuaW5nOiBpbmxpbmUgbmFtZXNwYWNlcyBhcmUgYSBDKysxMSBmZWF0dXJlIFstV2MrKzExLWlubGluZS1uYW1lc3BhY2VdXG5CT09TVF9NT1ZFX1NURF9OU19CRUdcbl5cbi9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L0JIL2luY2x1ZGUvYm9vc3QvbW92ZS9kZXRhaWwvc3RkX25zX2JlZ2luLmhwcDoxODozNDogbm90ZTogZXhwYW5kZWQgZnJvbSBtYWNybyAnQk9PU1RfTU9WRV9TVERfTlNfQkVHJ1xuICAgI2RlZmluZSBCT09TVF9NT1ZFX1NURF9OU19CRUcgX0xJQkNQUF9CRUdJTl9OQU1FU1BBQ0VfU1REXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeXG4vTGlicmFyeS9EZXZlbG9wZXIvQ29tbWFuZExpbmVUb29scy91c3IvYmluLy4uL2luY2x1ZGUvYysrL3YxL19fY29uZmlnOjM5NTo1Mjogbm90ZTogZXhwYW5kZWQgZnJvbSBtYWNybyAnX0xJQkNQUF9CRUdJTl9OQU1FU1BBQ0VfU1REJ1xuI2RlZmluZSBfTElCQ1BQX0JFR0lOX05BTUVTUEFDRV9TVEQgbmFtZXNwYWNlIHN0ZCB7aW5saW5lIG5hbWVzcGFjZSBfTElCQ1BQX05BTUVTUEFDRSB7XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeXG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gZmlsZTE1MjlkNWY2YmQ2OTYuY3BwOjU2NzpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9yc3Rhbi9pbmNsdWRlL3JzdGFuL3JzdGFuaW5jLmhwcDozOlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L3JzdGFuL2luY2x1ZGUvcnN0YW4vc3Rhbl9maXQuaHBwOjM2OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3JjL3N0YW4vc2VydmljZXMvb3B0aW1pemUvYmZncy5ocHA6MTE6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvU3RhbkhlYWRlcnMvaW5jbHVkZS9zcmMvc3Rhbi9vcHRpbWl6YXRpb24vYmZncy5ocHA6OTpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3NyYy9zdGFuL29wdGltaXphdGlvbi9sYmZnc191cGRhdGUuaHBwOjY6XG5JbiBmaWxlIGluY2x1ZGVkIGZyb20gL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvQkgvaW5jbHVkZS9ib29zdC9jaXJjdWxhcl9idWZmZXIuaHBwOjU0OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L0JIL2luY2x1ZGUvYm9vc3QvY2lyY3VsYXJfYnVmZmVyL2RldGFpbHMuaHBwOjIwOlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L0JIL2luY2x1ZGUvYm9vc3QvbW92ZS9tb3ZlLmhwcDozMDpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9CSC9pbmNsdWRlL2Jvb3N0L21vdmUvaXRlcmF0b3IuaHBwOjI3OlxuL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvQkgvaW5jbHVkZS9ib29zdC9tb3ZlL2RldGFpbC9pdGVyYXRvcl90cmFpdHMuaHBwOjI5OjE6IHdhcm5pbmc6IGlubGluZSBuYW1lc3BhY2VzIGFyZSBhIEMrKzExIGZlYXR1cmUgWy1XYysrMTEtaW5saW5lLW5hbWVzcGFjZV1cbkJPT1NUX01PVkVfU1REX05TX0JFR1xuXlxuL1VzZXJzL3Nhc2hhLmxhdW5keS9MaWJyYXJ5L1IvMy4zL2xpYnJhcnkvQkgvaW5jbHVkZS9ib29zdC9tb3ZlL2RldGFpbC9zdGRfbnNfYmVnaW4uaHBwOjE4OjM0OiBub3RlOiBleHBhbmRlZCBmcm9tIG1hY3JvICdCT09TVF9NT1ZFX1NURF9OU19CRUcnXG4gICAjZGVmaW5lIEJPT1NUX01PVkVfU1REX05TX0JFRyBfTElCQ1BQX0JFR0lOX05BTUVTUEFDRV9TVERcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5cbi9MaWJyYXJ5L0RldmVsb3Blci9Db21tYW5kTGluZVRvb2xzL3Vzci9iaW4vLi4vaW5jbHVkZS9jKysvdjEvX19jb25maWc6Mzk1OjUyOiBub3RlOiBleHBhbmRlZCBmcm9tIG1hY3JvICdfTElCQ1BQX0JFR0lOX05BTUVTUEFDRV9TVEQnXG4jZGVmaW5lIF9MSUJDUFBfQkVHSU5fTkFNRVNQQUNFX1NURCBuYW1lc3BhY2Ugc3RkIHtpbmxpbmUgbmFtZXNwYWNlIF9MSUJDUFBfTkFNRVNQQUNFIHtcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIF5cbkluIGZpbGUgaW5jbHVkZWQgZnJvbSBmaWxlMTUyOWQ1ZjZiZDY5Ni5jcHA6ODpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3NyYy9zdGFuL21vZGVsL21vZGVsX2hlYWRlci5ocHA6NDpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3N0YW4vbWF0aC5ocHA6NDpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3N0YW4vbWF0aC9yZXYvbWF0LmhwcDo0OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoL3Jldi9jb3JlLmhwcDo0NDpcbi9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoL3Jldi9jb3JlL3NldF96ZXJvX2FsbF9hZGpvaW50cy5ocHA6MTQ6MTc6IHdhcm5pbmc6IHVudXNlZCBmdW5jdGlvbiAnc2V0X3plcm9fYWxsX2Fkam9pbnRzJyBbLVd1bnVzZWQtZnVuY3Rpb25dXG4gICAgc3RhdGljIHZvaWQgc2V0X3plcm9fYWxsX2Fkam9pbnRzKCkge1xuICAgICAgICAgICAgICAgIF5cbkluIGZpbGUgaW5jbHVkZWQgZnJvbSBmaWxlMTUyOWQ1ZjZiZDY5Ni5jcHA6ODpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3NyYy9zdGFuL21vZGVsL21vZGVsX2hlYWRlci5ocHA6NDpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3N0YW4vbWF0aC5ocHA6NDpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3N0YW4vbWF0aC9yZXYvbWF0LmhwcDo0OlxuSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoL3Jldi9jb3JlLmhwcDo0NTpcbi9Vc2Vycy9zYXNoYS5sYXVuZHkvTGlicmFyeS9SLzMuMy9saWJyYXJ5L1N0YW5IZWFkZXJzL2luY2x1ZGUvc3Rhbi9tYXRoL3Jldi9jb3JlL3NldF96ZXJvX2FsbF9hZGpvaW50c19uZXN0ZWQuaHBwOjE3OjE3OiB3YXJuaW5nOiAnc3RhdGljJyBmdW5jdGlvbiAnc2V0X3plcm9fYWxsX2Fkam9pbnRzX25lc3RlZCcgZGVjbGFyZWQgaW4gaGVhZGVyIGZpbGUgc2hvdWxkIGJlIGRlY2xhcmVkICdzdGF0aWMgaW5saW5lJyBbLVd1bm5lZWRlZC1pbnRlcm5hbC1kZWNsYXJhdGlvbl1cbiAgICBzdGF0aWMgdm9pZCBzZXRfemVyb19hbGxfYWRqb2ludHNfbmVzdGVkKCkge1xuICAgICAgICAgICAgICAgIF5cbkluIGZpbGUgaW5jbHVkZWQgZnJvbSBmaWxlMTUyOWQ1ZjZiZDY5Ni5jcHA6ODpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3NyYy9zdGFuL21vZGVsL21vZGVsX2hlYWRlci5ocHA6NDpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3N0YW4vbWF0aC5ocHA6NDpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3N0YW4vbWF0aC9yZXYvbWF0LmhwcDoxMjpcbkluIGZpbGUgaW5jbHVkZWQgZnJvbSAvVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3N0YW4vbWF0aC9wcmltL21hdC5ocHA6NTg6XG4vVXNlcnMvc2FzaGEubGF1bmR5L0xpYnJhcnkvUi8zLjMvbGlicmFyeS9TdGFuSGVhZGVycy9pbmNsdWRlL3N0YW4vbWF0aC9wcmltL21hdC9mdW4vYXV0b2NvcnJlbGF0aW9uLmhwcDoxNzoxNDogd2FybmluZzogZnVuY3Rpb24gJ2ZmdF9uZXh0X2dvb2Rfc2l6ZScgaXMgbm90IG5lZWRlZCBhbmQgd2lsbCBub3QgYmUgZW1pdHRlZCBbLVd1bm5lZWRlZC1pbnRlcm5hbC1kZWNsYXJhdGlvbl1cbiAgICAgIHNpemVfdCBmZnRfbmV4dF9nb29kX3NpemUoc2l6ZV90IE4pIHtcbiAgICAgICAgICAgICBeXG42IHdhcm5pbmdzIGdlbmVyYXRlZC5cblxuU0FNUExJTkcgRk9SIE1PREVMICdsb2dfZ2RwIH4gZG5vcm0obXUsIHNpZ21hKScgTk9XIChDSEFJTiAxKS5cblxuR3JhZGllbnQgZXZhbHVhdGlvbiB0b29rIDYuNmUtMDUgc2Vjb25kc1xuMTAwMCB0cmFuc2l0aW9ucyB1c2luZyAxMCBsZWFwZnJvZyBzdGVwcyBwZXIgdHJhbnNpdGlvbiB3b3VsZCB0YWtlIDAuNjYgc2Vjb25kcy5cbkFkanVzdCB5b3VyIGV4cGVjdGF0aW9ucyBhY2NvcmRpbmdseSFcblxuXG5JdGVyYXRpb246ICAgIDEgLyAyMDAwIFsgIDAlXSAgKFdhcm11cClcbkl0ZXJhdGlvbjogIDIwMCAvIDIwMDAgWyAxMCVdICAoV2FybXVwKVxuSXRlcmF0aW9uOiAgNDAwIC8gMjAwMCBbIDIwJV0gIChXYXJtdXApXG5JdGVyYXRpb246ICA2MDAgLyAyMDAwIFsgMzAlXSAgKFdhcm11cClcbkl0ZXJhdGlvbjogIDgwMCAvIDIwMDAgWyA0MCVdICAoV2FybXVwKVxuSXRlcmF0aW9uOiAxMDAwIC8gMjAwMCBbIDUwJV0gIChXYXJtdXApXG5JdGVyYXRpb246IDEwMDEgLyAyMDAwIFsgNTAlXSAgKFNhbXBsaW5nKVxuSXRlcmF0aW9uOiAxMjAwIC8gMjAwMCBbIDYwJV0gIChTYW1wbGluZylcbkl0ZXJhdGlvbjogMTQwMCAvIDIwMDAgWyA3MCVdICAoU2FtcGxpbmcpXG5JdGVyYXRpb246IDE2MDAgLyAyMDAwIFsgODAlXSAgKFNhbXBsaW5nKVxuSXRlcmF0aW9uOiAxODAwIC8gMjAwMCBbIDkwJV0gIChTYW1wbGluZylcbkl0ZXJhdGlvbjogMjAwMCAvIDIwMDAgWzEwMCVdICAoU2FtcGxpbmcpXG5cbiBFbGFwc2VkIFRpbWU6IDAuMzcxOTMzIHNlY29uZHMgKFdhcm0tdXApXG4gICAgICAgICAgICAgICAwLjM2NjM1OCBzZWNvbmRzIChTYW1wbGluZylcbiAgICAgICAgICAgICAgIDAuNzM4MjkxIHNlY29uZHMgKFRvdGFsKVxuXG5cblNBTVBMSU5HIEZPUiBNT0RFTCAnbG9nX2dkcCB+IGRub3JtKG11LCBzaWdtYSknIE5PVyAoQ0hBSU4gMSkuXG5cbkdyYWRpZW50IGV2YWx1YXRpb24gdG9vayAzZS0wNSBzZWNvbmRzXG4xMDAwIHRyYW5zaXRpb25zIHVzaW5nIDEwIGxlYXBmcm9nIHN0ZXBzIHBlciB0cmFuc2l0aW9uIHdvdWxkIHRha2UgMC4zIHNlY29uZHMuXG5BZGp1c3QgeW91ciBleHBlY3RhdGlvbnMgYWNjb3JkaW5nbHkhXG5cblxuV0FSTklORzogTm8gdmFyaWFuY2UgZXN0aW1hdGlvbiBpc1xuICAgICAgICAgcGVyZm9ybWVkIGZvciBudW1fd2FybXVwIDwgMjBcblxuSXRlcmF0aW9uOiAxIC8gMSBbMTAwJV0gIChTYW1wbGluZylcblxuIEVsYXBzZWQgVGltZTogOWUtMDYgc2Vjb25kcyAoV2FybS11cClcbiAgICAgICAgICAgICAgIDAuMDAwNjY3IHNlY29uZHMgKFNhbXBsaW5nKVxuICAgICAgICAgICAgICAgMC4wMDA2NzYgc2Vjb25kcyAoVG90YWwpXG4ifQ== -->
+<pre><code>In file included from file1529d5f6bd696.cpp:8:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core.hpp:12:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core/gevv_vvv_vari.hpp:5:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core/var.hpp:7:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/math/tools/config.hpp:13:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/config.hpp:39:
+/Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/config/compiler/clang.hpp:200:11: warning: 'BOOST_NO_CXX11_RVALUE_REFERENCES' macro redefined [-Wmacro-redefined]
+#  define BOOST_NO_CXX11_RVALUE_REFERENCES
+          ^
+&lt;command line&gt;:6:9: note: previous definition is here
+#define BOOST_NO_CXX11_RVALUE_REFERENCES 1
+        ^
+In file included from file1529d5f6bd696.cpp:8:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core.hpp:36:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core/operator_unary_plus.hpp:7:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/prim/scal/fun/constants.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/math/constants/constants.hpp:13:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/math/tools/convert_from_string.hpp:15:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/lexical_cast.hpp:32:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/lexical_cast/try_lexical_convert.hpp:42:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/lexical_cast/detail/converter_lexical.hpp:52:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/container/container_fwd.hpp:61:
+/Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/container/detail/std_fwd.hpp:27:1: warning: inline namespaces are a C++11 feature [-Wc++11-inline-namespace]
+BOOST_MOVE_STD_NS_BEG
+^
+/Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/move/detail/std_ns_begin.hpp:18:34: note: expanded from macro 'BOOST_MOVE_STD_NS_BEG'
+   #define BOOST_MOVE_STD_NS_BEG _LIBCPP_BEGIN_NAMESPACE_STD
+                                 ^
+/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__config:395:52: note: expanded from macro '_LIBCPP_BEGIN_NAMESPACE_STD'
+#define _LIBCPP_BEGIN_NAMESPACE_STD namespace std {inline namespace _LIBCPP_NAMESPACE {
+                                                   ^
+In file included from file1529d5f6bd696.cpp:567:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/rstan/include/rstan/rstaninc.hpp:3:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/rstan/include/rstan/stan_fit.hpp:36:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/src/stan/services/optimize/bfgs.hpp:11:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/src/stan/optimization/bfgs.hpp:9:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/src/stan/optimization/lbfgs_update.hpp:6:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/circular_buffer.hpp:54:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/circular_buffer/details.hpp:20:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/move/move.hpp:30:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/move/iterator.hpp:27:
+/Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/move/detail/iterator_traits.hpp:29:1: warning: inline namespaces are a C++11 feature [-Wc++11-inline-namespace]
+BOOST_MOVE_STD_NS_BEG
+^
+/Users/sasha.laundy/Library/R/3.3/library/BH/include/boost/move/detail/std_ns_begin.hpp:18:34: note: expanded from macro 'BOOST_MOVE_STD_NS_BEG'
+   #define BOOST_MOVE_STD_NS_BEG _LIBCPP_BEGIN_NAMESPACE_STD
+                                 ^
+/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/__config:395:52: note: expanded from macro '_LIBCPP_BEGIN_NAMESPACE_STD'
+#define _LIBCPP_BEGIN_NAMESPACE_STD namespace std {inline namespace _LIBCPP_NAMESPACE {
+                                                   ^
+In file included from file1529d5f6bd696.cpp:8:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core.hpp:44:
+/Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints.hpp:14:17: warning: unused function 'set_zero_all_adjoints' [-Wunused-function]
+    static void set_zero_all_adjoints() {
+                ^
+In file included from file1529d5f6bd696.cpp:8:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/mat.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core.hpp:45:
+/Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/core/set_zero_all_adjoints_nested.hpp:17:17: warning: 'static' function 'set_zero_all_adjoints_nested' declared in header file should be declared 'static inline' [-Wunneeded-internal-declaration]
+    static void set_zero_all_adjoints_nested() {
+                ^
+In file included from file1529d5f6bd696.cpp:8:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/src/stan/model/model_header.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math.hpp:4:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/rev/mat.hpp:12:
+In file included from /Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/prim/mat.hpp:58:
+/Users/sasha.laundy/Library/R/3.3/library/StanHeaders/include/stan/math/prim/mat/fun/autocorrelation.hpp:17:14: warning: function 'fft_next_good_size' is not needed and will not be emitted [-Wunneeded-internal-declaration]
+      size_t fft_next_good_size(size_t N) {
+             ^
+6 warnings generated.
+
+SAMPLING FOR MODEL 'log_gdp ~ dnorm(mu, sigma)' NOW (CHAIN 1).
+
+Gradient evaluation took 6.6e-05 seconds
+1000 transitions using 10 leapfrog steps per transition would take 0.66 seconds.
+Adjust your expectations accordingly!
+
+
+Iteration:    1 / 2000 [  0%]  (Warmup)
+Iteration:  200 / 2000 [ 10%]  (Warmup)
+Iteration:  400 / 2000 [ 20%]  (Warmup)
+Iteration:  600 / 2000 [ 30%]  (Warmup)
+Iteration:  800 / 2000 [ 40%]  (Warmup)
+Iteration: 1000 / 2000 [ 50%]  (Warmup)
+Iteration: 1001 / 2000 [ 50%]  (Sampling)
+Iteration: 1200 / 2000 [ 60%]  (Sampling)
+Iteration: 1400 / 2000 [ 70%]  (Sampling)
+Iteration: 1600 / 2000 [ 80%]  (Sampling)
+Iteration: 1800 / 2000 [ 90%]  (Sampling)
+Iteration: 2000 / 2000 [100%]  (Sampling)
+
+ Elapsed Time: 0.371933 seconds (Warm-up)
+               0.366358 seconds (Sampling)
+               0.738291 seconds (Total)
+
+
+SAMPLING FOR MODEL 'log_gdp ~ dnorm(mu, sigma)' NOW (CHAIN 1).
+
+Gradient evaluation took 3e-05 seconds
+1000 transitions using 10 leapfrog steps per transition would take 0.3 seconds.
+Adjust your expectations accordingly!
+
+
+WARNING: No variance estimation is
+         performed for num_warmup &lt; 20
+
+Iteration: 1 / 1 [100%]  (Sampling)
+
+ Elapsed Time: 9e-06 seconds (Warm-up)
+               0.000667 seconds (Sampling)
+               0.000676 seconds (Total)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiVGhlcmUgd2VyZSAxIGRpdmVyZ2VudCB0cmFuc2l0aW9ucyBhZnRlciB3YXJtdXAuIEluY3JlYXNpbmcgYWRhcHRfZGVsdGEgYWJvdmUgMC44IG1heSBoZWxwLiBTZWVcbmh0dHA6Ly9tYy1zdGFuLm9yZy9taXNjL3dhcm5pbmdzLmh0bWwjZGl2ZXJnZW50LXRyYW5zaXRpb25zLWFmdGVyLXdhcm11cEV4YW1pbmUgdGhlIHBhaXJzKCkgcGxvdCB0byBkaWFnbm9zZSBzYW1wbGluZyBwcm9ibGVtc1xuQ29tcHV0aW5nIFdBSUNcbkNvbnN0cnVjdGluZyBwb3N0ZXJpb3IgcHJlZGljdGlvbnNcbiJ9 -->
+<pre><code>There were 1 divergent transitions after warmup. Increasing adapt_delta above 0.8 may help. See
+http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmupExamine the pairs() plot to diagnose sampling problems
+Computing WAIC
+Constructing posterior predictions</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWyAxMDAgLyAxMDAwIF1cblsgMjAwIC8gMTAwMCBdXG5bIDMwMCAvIDEwMDAgXVxuWyA0MDAgLyAxMDAwIF1cblsgNTAwIC8gMTAwMCBdXG5bIDYwMCAvIDEwMDAgXVxuWyA3MDAgLyAxMDAwIF1cblsgODAwIC8gMTAwMCBdXG5bIDkwMCAvIDEwMDAgXVxuWyAxMDAwIC8gMTAwMCBdXG4ifQ== -->
+<pre><code>[ 100 / 1000 ]
+[ 200 / 1000 ]
+[ 300 / 1000 ]
+[ 400 / 1000 ]
+[ 500 / 1000 ]
+[ 600 / 1000 ]
+[ 700 / 1000 ]
+[ 800 / 1000 ]
+[ 900 / 1000 ]
+[ 1000 / 1000 ]</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
