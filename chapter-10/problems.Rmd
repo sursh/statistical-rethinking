@@ -78,6 +78,20 @@ Fit the model on p 330 with `map` and `map2stan` and compare.
 
 
 
+
+```{r}
+m3.map2stan <- rethinking::map2stan(
+  alist(
+    y ~ dbinom(n, p),
+    logit(p) <- a + bp * P + bv * V + ba * A,
+    a ~ dnorm(0, 10),
+    bp ~ dnorm(0, 5),
+    bv ~ dnorm(0, 5),
+    ba ~ dnorm(0, 5)
+  ),
+  data = cleaned_eagles
+)
+```
 ```{r}
 m3.map <- rethinking::map(
   alist(
@@ -90,33 +104,34 @@ m3.map <- rethinking::map(
   ),
   data = cleaned_eagles
 )
-precis(m3.map)
 ```
+
 ```{r}
-m3.map2stan <- rethinking::map2stan(
-  alist(
-    y ~ dbinom(n, p),
-    logit(p) <- a + bp * P + bv * V + ba * A,
-    a ~ dnorm(0, 10),
-    bp ~ dnorm(0, 5),
-    bv ~ dnorm(0, 5),
-    ba ~ dnorm(0, 5)
-  ),
-  data = eagles
-)
+precis(m3.map)
 precis(m3.map2stan)
+pairs(m3.map)
+pairs(m3.map2stan)
 ```
+Their coefficients look pretty similar, and the pairwise plots for both look multivariate Gaussian (although less so from the Stan model) so it looks like the quadratic approximation does hold for this model. Let's continue with the `map` model. 
 
 ## Part B
 
-- Pick one of the models
-- plot predicted prob of success at 89% interval for each row
-- plot the predicted succes count and its 89% interval.
-What dif info does ieach type of post pred provide?
+Plot predicted prob of success at 89% interval for each row i in the data
 
 ```{r}
-
+link3 <- link(m3.map, data = cleaned_eagles)
+results <- as.tibble(t(apply(link3, 2, HPDI, prob = 0.89)))
+colnames(results) <- c('low_int', 'high_int')
+cbind(cleaned_eagles, results) %>% View
 ```
+
+Plot the predicted success count and its 89% interval.
+
+```{r}
+# TODO finish
+```
+
+What diff info does each type of post pred provide?
 
 ## Part C
 
